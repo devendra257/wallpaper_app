@@ -170,6 +170,8 @@ class WallpaperPageState extends State<WallpaperPage> {
                     const SizedBox(
                       height: 30,
                     ),
+
+                    //* Best if the Month Image
                     const Text(
                       'Best of the month',
                       style: TextStyle(
@@ -207,6 +209,9 @@ class WallpaperPageState extends State<WallpaperPage> {
                     const SizedBox(
                       height: 30,
                     ),
+
+                    //* Color List
+
                     const Text(
                       'The color tone',
                       style: TextStyle(
@@ -238,6 +243,9 @@ class WallpaperPageState extends State<WallpaperPage> {
                     const SizedBox(
                       height: 20,
                     ),
+
+                    //* All Category
+
                     const Text(
                       'Categories',
                       style: TextStyle(
