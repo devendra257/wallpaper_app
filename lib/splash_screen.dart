@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:wallpaper_app/wallpaper_page.dart';
+import 'package:wallpaper_app/pages/wallpaper_page.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -38,7 +38,7 @@ class _SplashScreenState extends State<SplashScreen> {
               fit: BoxFit.cover,
             ),
           ),
-          Center(
+          const Center(
             child: Text(
               'Wallpaper',
               style: TextStyle(

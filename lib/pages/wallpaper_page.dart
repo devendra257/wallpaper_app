@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:wallpaper_app/animals.dart';
-import 'package:wallpaper_app/film.dart';
-import 'package:wallpaper_app/flower.dart';
-import 'package:wallpaper_app/food.dart';
-
-import 'package:wallpaper_app/sports.dart';
-import 'package:wallpaper_app/street_photography.dart';
+import 'package:wallpaper_app/pages/animals.dart';
+import 'package:wallpaper_app/pages/film.dart';
+import 'package:wallpaper_app/pages/flower.dart';
+import 'package:wallpaper_app/pages/food.dart';
+import 'package:wallpaper_app/pages/sports.dart';
+import 'package:wallpaper_app/pages/street_photography.dart';
 
 import 'natural.dart';
 
