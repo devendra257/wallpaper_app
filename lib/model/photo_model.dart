@@ -1,5 +1,3 @@
-import 'dart:js_interop';
-
 import 'package:wallpaper_app/model/src_model.dart';
 
 class PhotoModel {

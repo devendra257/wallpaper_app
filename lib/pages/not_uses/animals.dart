@@ -51,29 +51,29 @@ class Animals extends StatelessWidget {
             children: [
               Text(
                 title,
-                style: TextStyle(
+                style: const TextStyle(
                     fontSize: 40,
                     fontWeight: FontWeight.bold,
                     color: Colors.white),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               Text(
                 '${listAnimalsImage.length} wallpaper available',
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 22,
                   color: Colors.white,
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
               // Image of the natural element
               Expanded(
                 child: GridView.builder(
                   itemCount: listAnimalsImage.length,
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 3,
                     crossAxisSpacing: 11,
                     mainAxisSpacing: 11,

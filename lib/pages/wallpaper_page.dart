@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:wallpaper_app/pages/animals.dart';
-import 'package:wallpaper_app/pages/film.dart';
-import 'package:wallpaper_app/pages/flower.dart';
-import 'package:wallpaper_app/pages/food.dart';
-import 'package:wallpaper_app/pages/sports.dart';
-import 'package:wallpaper_app/pages/street_photography.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lottie/lottie.dart';
+import 'package:wallpaper_app/bloc/photo_bloc.dart';
+import 'package:wallpaper_app/bloc/photo_event.dart';
+import 'package:wallpaper_app/bloc/photo_state.dart';
+import 'package:wallpaper_app/pages/photo_viewer.dart';
 
-import 'natural.dart';
+import 'wallpaper_list.dart';
 
 class WallpaperPage extends StatefulWidget {
   @override
@@ -35,27 +35,25 @@ class WallpaperPageState extends State<WallpaperPage> {
   ];
 
   List listColor = [
-    Colors.blueAccent[400],
-    Colors.redAccent[400],
-    Colors.greenAccent[400],
-    Colors.amber,
-    Colors.deepOrange,
-    Colors.amberAccent,
-    Colors.black,
-    Colors.blue,
-    Colors.blueGrey,
-    Colors.brown,
-    Colors.cyan,
-    Colors.deepOrange,
-    Colors.orange,
-    Colors.deepPurple,
-    Colors.indigo,
-    Colors.purple,
-    Colors.lightBlue,
-    Colors.pink,
-    Colors.lime,
-    Colors.teal,
-    Colors.tealAccent
+    {'color': Colors.black, 'code': '000000'},
+    {'color': Colors.deepOrange, 'code': 'FF5722'},
+    {'color': Colors.amber, 'code': 'FFC107'},
+    {'color': Colors.blueGrey, 'code': '607D8B'},
+    {'color': Colors.cyan, 'code': '00BCD4'},
+    {'color': Colors.red, 'code': 'red'},
+    {'color': Colors.yellow, 'code': 'yellow'},
+    {'color': Colors.orange, 'code': 'orange'},
+    {'color': Colors.blue, 'code': 'blue'},
+    {'color': Colors.purple, 'code': 'purple'},
+    {'color': Colors.brown, 'code': 'brown'},
+    {'color': Colors.green, 'code': 'green'},
+    {'color': Colors.indigo, 'code': '3F51B5'},
+    {'color': Colors.lightGreen, 'code': '8BC34A'},
+    {'color': Colors.lime, 'code': 'CDDC39'},
+    {'color': Colors.pink, 'code': 'pink'},
+    {'color': Colors.white, 'code': 'white'},
+    {'color': Colors.cyanAccent, 'code': '18FFFF'},
+    {'color': Colors.deepPurple, 'code': '673AB7'},
   ];
 
   List<Map<String, dynamic>> categoriesName = [
@@ -65,7 +63,7 @@ class WallpaperPageState extends State<WallpaperPage> {
     },
     {
       'name': "Flowers",
-      'img_cat': 'assets/images/flower/img_flower23.avif',
+      'img_cat': 'assets/images/flower/img_flower233.png',
     },
     {
       'name': "Sports",
@@ -100,8 +98,23 @@ class WallpaperPageState extends State<WallpaperPage> {
       'name': "Arts & Culture",
       'img_cat': 'assets/images/film/img_film6.avif',
     },
+    {
+      'name': "Car",
+      'img_cat': 'assets/images/film/img_film6.avif',
+    },
     // {'name': "Flowers", 'img_cat': 'assets/images/img_natural13.jpg'},
   ];
+
+  var queryController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    context.read<PhotoBloc>().add(GetTrenddingWallpaper());
+    // context.read<WallpaperListBloc>().add(GetSearchWallpaper(query: query));
+  }
+
   @override
   Widget build(BuildContext context) {
     listImage.shuffle();
@@ -144,20 +157,33 @@ class WallpaperPageState extends State<WallpaperPage> {
                             )
                           ],
                         ),
-                        child: const TextField(
+                        child: TextField(
+                          controller: queryController,
                           decoration: InputDecoration(
                             hintText: 'Find Wallpaper..',
-                            hintStyle: TextStyle(
+                            hintStyle: const TextStyle(
                               color: Color.fromARGB(255, 152, 152, 152),
                             ),
-                            suffixIcon: Icon(Icons.image_search),
-                            suffixIconColor: Color.fromARGB(255, 172, 172, 172),
-                            enabledBorder: UnderlineInputBorder(
+                            suffixIcon: InkWell(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => WallpaperList(
+                                        mQuery: queryController.text.toString(),
+                                      ),
+                                    ),
+                                  );
+                                },
+                                child: const Icon(Icons.image_search)),
+                            suffixIconColor:
+                                const Color.fromARGB(255, 172, 172, 172),
+                            enabledBorder: const UnderlineInputBorder(
                               borderSide: BorderSide(
                                 color: Color(0xffDBEBF1),
                               ),
                             ),
-                            focusedBorder: UnderlineInputBorder(
+                            focusedBorder: const UnderlineInputBorder(
                               borderSide: BorderSide(
                                 color: Color(0xffDBEBF1),
                               ),
@@ -182,29 +208,90 @@ class WallpaperPageState extends State<WallpaperPage> {
                       height: 10,
                     ),
                     SizedBox(
-                      height: 300,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: listImage.length,
-                        itemBuilder: (context, index) {
-                          return Container(
-                            margin: const EdgeInsets.only(right: 20),
-                            width: 200,
-                            height: 200,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
-                              image: DecorationImage(
+                        height: 300,
+                        child: BlocBuilder<PhotoBloc, PhotoState>(
+                            builder: (_, state) {
+                          if (state is PhotoLoadingState) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          } else if (state is PhotoInternetErrorState) {
+                            return Center(
+                              child: Lottie.asset(
+                                'assets/json/internet_error.json',
                                 fit: BoxFit.cover,
-                                image: AssetImage(
-                                  listImage[index],
-                                ),
+                                height: 250,
                               ),
-                            ),
-                            // child: Image.asset(listImage[index]),
+                            );
+                          } else if (state is PhotoErrorState) {
+                            return Center(
+                              child: Text(state.errMsg),
+                            );
+                          } else if (state is PhotoLoadedState) {
+                            return ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: state.wallpaperModel.photos!.length,
+                              itemBuilder: (context, index) {
+                                return InkWell(
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => PhotoViewer(
+                                            imgViewer: state.wallpaperModel
+                                                .photos![index].src!.original!,
+                                          ),
+                                        ));
+                                  },
+                                  child: Container(
+                                    margin: const EdgeInsets.only(right: 20),
+                                    width: 200,
+                                    height: 200,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(20),
+                                      image: DecorationImage(
+                                        fit: BoxFit.cover,
+                                        image: NetworkImage(
+                                          state.wallpaperModel.photos![index]
+                                              .src!.portrait!,
+                                        ),
+                                      ),
+                                    ),
+                                    // child: Image.asset(listImage[index]),
+                                  ),
+                                );
+                              },
+                            );
+                          }
+
+                          return const Center(
+                            child: Text('No Data Found'),
                           );
-                        },
-                      ),
-                    ),
+                        })
+
+                        // ListView.builder(
+                        //   scrollDirection: Axis.horizontal,
+                        //   itemCount: listImage.length,
+                        //   itemBuilder: (context, index) {
+                        //     return Container(
+                        //       margin: const EdgeInsets.only(right: 20),
+                        //       width: 200,
+                        //       height: 200,
+                        //       decoration: BoxDecoration(
+                        //         borderRadius: BorderRadius.circular(20),
+                        //         image: DecorationImage(
+                        //           fit: BoxFit.cover,
+                        //           image: AssetImage(
+                        //             listImage[index],
+                        //           ),
+                        //         ),
+                        //       ),
+                        //       // child: Image.asset(listImage[index]),
+                        //     );
+                        //   },
+                        // ),
+
+                        ),
                     const SizedBox(
                       height: 30,
                     ),
@@ -212,7 +299,7 @@ class WallpaperPageState extends State<WallpaperPage> {
                     //* Color List
 
                     const Text(
-                      'The color tone',
+                      'The Color Tone',
                       style: TextStyle(
                         fontSize: 21,
                         fontWeight: FontWeight.bold,
@@ -227,13 +314,28 @@ class WallpaperPageState extends State<WallpaperPage> {
                         scrollDirection: Axis.horizontal,
                         itemCount: listColor.length,
                         itemBuilder: (context, index) {
-                          return Container(
-                            margin: const EdgeInsets.only(right: 10),
-                            width: 50,
-                            height: 50,
-                            decoration: BoxDecoration(
-                              color: listColor[index],
-                              borderRadius: BorderRadius.circular(10),
+                          return InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => WallpaperList(
+                                    mQuery: queryController.text.isNotEmpty
+                                        ? queryController.text.toString()
+                                        : 'Nature',
+                                    mColor: listColor[index]['code'],
+                                  ),
+                                ),
+                              );
+                            },
+                            child: Container(
+                              margin: const EdgeInsets.only(right: 10),
+                              width: 50,
+                              height: 50,
+                              decoration: BoxDecoration(
+                                color: listColor[index]['color'],
+                                borderRadius: BorderRadius.circular(10),
+                              ),
                             ),
                           );
                         },
@@ -255,127 +357,130 @@ class WallpaperPageState extends State<WallpaperPage> {
                     const SizedBox(
                       height: 20,
                     ),
-                    Container(
-                      height: 500,
-                      padding: const EdgeInsets.only(right: 5),
-                      child: GridView.builder(
-                        itemCount: categoriesName.length,
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          childAspectRatio: 16 / 9,
-                        ),
-                        itemBuilder: (Context, index) {
-                          return InkWell(
-                            onTap: () {
-                              if (index == 0) {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => Natural(
-                                      title: categoriesName[index]['name'],
-                                    ),
-                                  ),
-                                );
-                              } else if (index == 1) {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => Flower(
-                                      title: categoriesName[index]['name'],
-                                    ),
-                                  ),
-                                );
-                              } else if (index == 2) {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => Sports(
-                                      title: categoriesName[index]['name'],
-                                    ),
-                                  ),
-                                );
-                              } else if (index == 3) {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => Film(
-                                      title: categoriesName[index]['name'],
-                                    ),
-                                  ),
-                                );
-                              } else if (index == 4) {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => StreetPhotography(
-                                      title: categoriesName[index]['name'],
-                                    ),
-                                  ),
-                                );
-                              } else if (index == 5) {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => Animals(
-                                      title: categoriesName[index]['name'],
-                                    ),
-                                  ),
-                                );
-                              } else if (index == 6) {
-                                // Navigator.push(
-                                //   context,
-                                //   MaterialPageRoute(
-                                //     builder: (context) => Scaffold(
-                                //       appBar: AppBar(
-                                //         title: categoriesName[index]['name'],
-                                //       ),
-                                //     ),
-                                //   ),
-                                // );
-                              } else if (index == 7) {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => Food(
-                                      title: categoriesName[index]['name'],
-                                    ),
-                                  ),
-                                );
-                              }
-                            },
-                            child: Stack(
-                              children: [
-                                Container(
-                                  margin: const EdgeInsets.only(
-                                    right: 15,
-                                    bottom: 10,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(10),
-                                    image: DecorationImage(
-                                      fit: BoxFit.cover,
-                                      image: AssetImage(
-                                        categoriesName[index]["img_cat"],
-                                      ),
+                    GridView.builder(
+                      itemCount: categoriesName.length,
+                      physics: NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        childAspectRatio: 16 / 9,
+                      ),
+                      itemBuilder: (Context, index) {
+                        return InkWell(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => WallpaperList(
+                                      mQuery: categoriesName[index]['name']),
+                                )); // if (index == 0) {
+                            //   Navigator.push(
+                            //     context,
+                            //     MaterialPageRoute(
+                            //       builder: (context) => Natural(
+                            //         title: categoriesName[index]['name'],
+                            //       ),
+                            //     ),
+                            //   );
+                            // } else if (index == 1) {
+                            //   Navigator.push(
+                            //     context,
+                            //     MaterialPageRoute(
+                            //       builder: (context) => Flower(
+                            //         title: categoriesName[index]['name'],
+                            //       ),
+                            //     ),
+                            //   );
+                            // } else if (index == 2) {
+                            //   Navigator.push(
+                            //     context,
+                            //     MaterialPageRoute(
+                            //       builder: (context) => Sports(
+                            //         title: categoriesName[index]['name'],
+                            //       ),
+                            //     ),
+                            //   );
+                            // } else if (index == 3) {
+                            //   Navigator.push(
+                            //     context,
+                            //     MaterialPageRoute(
+                            //       builder: (context) => Film(
+                            //         title: categoriesName[index]['name'],
+                            //       ),
+                            //     ),
+                            //   );
+                            // } else if (index == 4) {
+                            //   Navigator.push(
+                            //     context,
+                            //     MaterialPageRoute(
+                            //       builder: (context) => StreetPhotography(
+                            //         title: categoriesName[index]['name'],
+                            //       ),
+                            //     ),
+                            //   );
+                            // } else if (index == 5) {
+                            //   Navigator.push(
+                            //     context,
+                            //     MaterialPageRoute(
+                            //       builder: (context) => Animals(
+                            //         title: categoriesName[index]['name'],
+                            //       ),
+                            //     ),
+                            //   );
+                            // } else if (index == 6) {
+                            //   // Navigator.push(
+                            //   //   context,
+                            //   //   MaterialPageRoute(
+                            //   //     builder: (context) => Scaffold(
+                            //   //       appBar: AppBar(
+                            //   //         title: categoriesName[index]['name'],
+                            //   //       ),
+                            //   //     ),
+                            //   //   ),
+                            //   // );
+                            // } else if (index == 7) {
+                            //   Navigator.push(
+                            //     context,
+                            //     MaterialPageRoute(
+                            //       builder: (context) => Food(
+                            //         title: categoriesName[index]['name'],
+                            //       ),
+                            //     ),
+                            //   );
+                            // }
+                          },
+                          child: Stack(
+                            children: [
+                              Container(
+                                margin: const EdgeInsets.only(
+                                  right: 15,
+                                  bottom: 10,
+                                ),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  image: DecorationImage(
+                                    fit: BoxFit.cover,
+                                    image: AssetImage(
+                                      categoriesName[index]["img_cat"],
                                     ),
                                   ),
                                 ),
-                                Center(
-                                  child: Text(
-                                    categoriesName[index]['name'],
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
-                                    ),
+                              ),
+                              Center(
+                                child: Text(
+                                  categoriesName[index]['name'],
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
                                   ),
-                                )
-                              ],
-                            ),
-                          );
-                        },
-                      ),
+                                ),
+                              )
+                            ],
+                          ),
+                        );
+                      },
                     )
                   ],
                 ),

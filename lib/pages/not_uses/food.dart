@@ -1,27 +1,33 @@
 import 'package:flutter/material.dart';
 
-class Natural extends StatelessWidget {
+class Food extends StatelessWidget {
   String title;
 
-  Natural({required this.title});
+  Food({required this.title});
 
-  List listNaturalImage = [
-    'assets/images/natural/img_natural16.jpg',
-    'assets/images/natural/img_natural15.jpg',
-    'assets/images/natural/img_natural14.jpg',
-    'assets/images/natural/img_natural13.jpg',
-    'assets/images/natural/img_natural12.jpg',
-    'assets/images/natural/img_natural11.jpg',
-    'assets/images/natural/img_natural10.jpg',
-    'assets/images/natural/img_natural9.jpg',
-    'assets/images/natural/img_natural8.jpg',
-    'assets/images/natural/img_natural7.webp',
-    'assets/images/natural/img_natural6.jpg',
-    'assets/images/natural/img_natural5.jpg',
-    'assets/images/natural/img_natural4.jpg',
-    'assets/images/natural/img_natural3.jpg',
-    'assets/images/natural/img_natural2.jpg',
-    'assets/images/natural/img_natural.jpeg',
+  List listFoodImage = [
+    'assets/images/food/img_food.avif',
+    'assets/images/food/img_food1.avif',
+    'assets/images/food/img_food2.avif',
+    'assets/images/food/img_food3.avif',
+    'assets/images/food/img_food4.avif',
+    'assets/images/food/img_food5.avif',
+    'assets/images/food/img_food6.avif',
+    'assets/images/food/img_food7.avif',
+    'assets/images/food/img_food9.avif',
+    'assets/images/food/img_food10.avif',
+    'assets/images/food/img_food11.avif',
+    'assets/images/food/img_food12.avif',
+    'assets/images/food/img_food13.avif',
+    'assets/images/food/img_food14.avif',
+    'assets/images/food/img_food15.avif',
+    'assets/images/food/img_food16.avif',
+    'assets/images/food/img_food17.avif',
+    'assets/images/food/img_food18.avif',
+    'assets/images/food/img_food19.avif',
+    'assets/images/food/img_food20.avif',
+    'assets/images/food/img_food21.avif',
+    'assets/images/food/img_food22.avif',
   ];
 
   @override
@@ -46,7 +52,7 @@ class Natural extends StatelessWidget {
                 height: 10,
               ),
               Text(
-                '${listNaturalImage.length} wallpaper available',
+                '${listFoodImage.length} wallpaper available',
                 style: TextStyle(
                   fontSize: 22,
                   color: Colors.white,
@@ -58,7 +64,7 @@ class Natural extends StatelessWidget {
               // Image of the natural element
               Expanded(
                 child: GridView.builder(
-                  itemCount: listNaturalImage.length,
+                  itemCount: listFoodImage.length,
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 3,
                     crossAxisSpacing: 11,
@@ -67,14 +73,12 @@ class Natural extends StatelessWidget {
                   ),
                   itemBuilder: (context, index) {
                     return Container(
-                      width: 150,
-                      height: 300,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(15),
                         image: DecorationImage(
                           fit: BoxFit.cover,
                           image: AssetImage(
-                            listNaturalImage[index],
+                            listFoodImage[index],
                           ),
                         ),
                       ),
