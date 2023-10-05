@@ -366,7 +366,7 @@ class WallpaperPageState extends State<WallpaperPage> {
                         crossAxisCount: 2,
                         childAspectRatio: 16 / 9,
                       ),
-                      itemBuilder: (Context, index) {
+                      itemBuilder: (_, index) {
                         return InkWell(
                           onTap: () {
                             Navigator.push(

@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:gallery_saver/gallery_saver.dart';
 import 'package:wallpaper/wallpaper.dart';
@@ -20,10 +21,17 @@ class PhotoViewer extends StatelessWidget {
         children: [
           SizedBox(
             height: double.infinity,
-            child: Image.network(
-              imgViewer,
+            child: CachedNetworkImage(
+              imageUrl: imgViewer,
               fit: BoxFit.cover,
+              progressIndicatorBuilder: (context, url, progress) {
+                return Center(child: CircularProgressIndicator());
+              },
             ),
+            // child: Image.network(
+            //   imgViewer,
+            //   fit: BoxFit.cover,
+            // ),
           ),
           Align(
             alignment: Alignment.bottomCenter,
